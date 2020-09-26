@@ -1,14 +1,10 @@
 import React from 'react';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import {
-  FacebookLoginButton,
-  GoogleLoginButton,
-  GithubLoginButton,
-} from 'react-social-login-buttons';
+import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
 import styled from 'styled-components';
 import KakaoLogin from 'react-kakao-login';
 import Title from '../common/Title';
-import KakaoImage from '../../assets/images/kakao_login_medium_narrow.png';
+import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
 
 const LoginPage = () => {
   return (
@@ -23,12 +19,10 @@ const LoginPage = () => {
         <Input type="password" placeholder="Password"></Input>
       </FormGroup>
       <Button className="btn-lg btn-dark btn-block">Login</Button>
-      <div className="text-center pt-3">
-        Or continue with your social account
-      </div>
-      <FacebookLoginButton className="mt-3 mb-3" />
-      <GoogleLoginButton className="mt-3 mb-3" />
-      <GithubLoginButton className="mt-3 mb-3" />
+      <div className="text-center pt-3">Or continue with your social account</div>
+      <FacebookLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
+      <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
+      <GithubLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
       <KakaoBtn />
 
       <div className="text-center">
@@ -52,7 +46,7 @@ const KakaoBtn = styled(KakaoLogin)`
   padding: 0px 10px;
   user-select: none;
   background: #f7e600 url(${KakaoImage}) no-repeat left center;
-  background-size: auto 50px;
+  background-size: auto 45px;
   text-indent: -10000px;
   &:hover {
     box-shadow: 0 0px 15px 0 rgba(0, 0, 0, 0.2);
