@@ -10,7 +10,10 @@ const NavForm = () => {
                     <Link to="/"><Nav className="nav-link">Home</Nav></Link>
                     <Link to="/board"><Nav className="nav-link">Board</Nav></Link>
                     <Link to="/notice"><Nav className="nav-link">Notice</Nav></Link>
+                </Nav>
+                <Nav>
                     <Link to="/login"><Nav className="nav-link">Login</Nav></Link>
+                    <Link to="/signUp"><Nav className="nav-link tmb_margin_20">Sign up</Nav></Link>
                 </Nav>
             <Form inline>
                 <FormControl type="text" placeholder="Search" className="mr-sm-2" />

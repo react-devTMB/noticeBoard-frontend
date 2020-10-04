@@ -3,10 +3,14 @@ import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
 import styled from 'styled-components';
 import KakaoLogin from 'react-kakao-login';
+import { Link } from "react-router-dom";
+import NaverLoginButton from 'react-naver-login';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
 
+
 const LoginPage = () => {
+
   return (
     <Form className="login-form">
       <Title text="welcome to TMB~!!"></Title>
@@ -19,14 +23,20 @@ const LoginPage = () => {
         <Input type="password" placeholder="Password"></Input>
       </FormGroup>
       <Button className="btn-lg btn-dark btn-block">Login</Button>
-      <div className="text-center pt-3">Or continue with your social account</div>
+      <div className="text-center pt-3">-Or continue with your social account-</div>
       <FacebookLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
       <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
       <GithubLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
       <KakaoBtn />
-
+      <NaverLoginButton
+        clientId="ipM6oOYodgSsCLBmyOs4"
+        callbackUrl="http://localhost:3000/login"
+        render={(props) => <div onClick={ props.onClick } className="btn_naver">Login with Naver</div>}
+        onSuccess={(naverUser) => naverLoginCallback(naverUser)}
+        onFailure={() => loginFailCallback()}
+      />
       <div className="text-center">
-        <a href="/sign-up">Sign up</a>
+        <Link to="/signUp">Sign up</Link>
         <span className="p-2">|</span>
         <a href="/forgot-password">Forgot Password</a>
       </div>
@@ -34,11 +44,21 @@ const LoginPage = () => {
   );
 };
 
+const naverLoginCallback = (resData) => {
+  console.log('resData >>>> ' , JSON.stringify(resData));
+};
+
+const loginFailCallback = () => {
+  console.log('login faill !!!!');
+}
+
+
 const KakaoBtn = styled(KakaoLogin)`
   display: block;
   border: 0px;
   border-radius: 3px;
   box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 2px;
+  color : #fff;
   cursor: pointer;
   margin: 1rem 5px;
   width: calc(100% - 10px);
@@ -52,5 +72,6 @@ const KakaoBtn = styled(KakaoLogin)`
     box-shadow: 0 0px 15px 0 rgba(0, 0, 0, 0.2);
   }
 `;
+
 
 export default LoginPage;
