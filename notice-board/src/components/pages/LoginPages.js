@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
 import styled from 'styled-components';
@@ -27,7 +27,8 @@ const LoginPage = () => {
         <GoogleLoginButton  className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <GithubLoginButton  onClick={() => window.open( GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
-        <a href={NAVER_AUTH_URL} className="btn_naver"></a>
+        
+        <a href={NAVER_AUTH_URL}><div className="btn_naver" ></div></a>
         <div className="text-center">
           <Link to="/signUp">Sign up</Link>
           <span className="p-2">|</span>
