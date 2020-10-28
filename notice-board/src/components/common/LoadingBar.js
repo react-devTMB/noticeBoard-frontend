@@ -16,7 +16,7 @@ const LoadingBar = () => {
     const classes = useStyles();
     return (
         <div className={ classes.root }>
-            <CircularProgress color="#343a40"/>
+            <CircularProgress color="inherit"/>
         </div>
     )
 }

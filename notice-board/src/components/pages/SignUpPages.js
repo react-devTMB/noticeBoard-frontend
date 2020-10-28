@@ -5,7 +5,7 @@ import { EMAIL_REG, PWD_REG } from '../common/Constants';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import LoadingBar from '../common/LoadingBar';
 
-const SignUpPages = () => {
+const SignUpPages = ({history}) => {
 
   
   const [ name, setName ] = useState('');                 // 닉네임
@@ -66,7 +66,7 @@ const SignUpPages = () => {
 
     const { name, value } = e.target;
     
-    name === "password" ? setPassword(e.target.value) : setPwdConfirm(e.target.value);
+    name === "password" ? setPassword(value.trim()) : setPwdConfirm(value.trim());
     
     // console.log("name , value, password, pwdConfirm >> " , name, value, password, pwdConfirm);
     if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
@@ -118,20 +118,29 @@ const SignUpPages = () => {
   const handleOnSubmit = e => {
     e.preventDefault();
 
-    const  { registForm } = { 'name' : name, 'email' :  email, 'password' : password, 'role_id' : 'admin'}
+    const registForm = { 
+      'email' : email,
+      'password' : password,
+      'name' : name, 
+      'role_id' : 'admin'       // 임시
+    };
 
-    console.log("registForm >> " , registForm);
-    // 회원가입 axios 연동
+
+    console.log("registForm >> " , JSON.stringify(registForm));
     setLoading(true);
-    // loadingbar show
     axios.post('/api/v1/user', registForm)
       .then(res => {
-        console.log("submit , success res >>>> ", JSON.stringify(res));
         setLoading(false);
-        // 메인화면으로 이동
+        console.log("submit , success res >>>> ", JSON.stringify(res));
+        if(res.status === 200) {      // 성공
+          history.push('/login');
+        } else {
+
+        }
       })
       .catch(res => {
         setLoading(false);
+        console.log("fail >>>> ", JSON.stringify(res));
       });
   }
 
