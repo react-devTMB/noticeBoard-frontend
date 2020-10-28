@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Title from '../common/Title';
 import axios from 'axios';
 import { EMAIL_REG, PWD_REG } from '../common/Constants';
@@ -61,75 +61,64 @@ const SignUpPages = () => {
     checkEnabled({ ...enabled });
   };
 
-  const onChangePassword = (e) => {
-    const { value } = e.target;
+  const onChangePassword = useCallback(e => {
+    e.preventDefault();
 
-    setPassword(value.trim());
-
+    const { name, value } = e.target;
+    
+    name === "password" ? setPassword(e.target.value) : setPwdConfirm(e.target.value);
+    
+    // console.log("name , value, password, pwdConfirm >> " , name, value, password, pwdConfirm);
     if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
+      name === "password" ? enabled.checkPassword = true :  enabled.checkPasswordConfirm = true;
       setErrorTxt('');
       e.target.parentElement.classList.add("mc_checkmark");
-      enabled.checkPassword = true;
-      if (value === pwdConfirm) {
-        setErrorTxt('');
-        e.target.parentElement.classList.add("mc_checkmark");
-        enabled.checkPassword = true;
-      } else {
-        setErrorTxt('비밀번호가 일치하지 않습니다.');
-        e.target.parentElement.classList.remove("mc_checkmark");
-        enabled.checkPassword = false;
-      }
     } else {
       setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
       e.target.parentElement.classList.remove("mc_checkmark");
-      enabled.checkPassword = false;
+      name === "password" ? enabled.checkPassword = false :  enabled.checkPasswordConfirm = false;
     }
 
     checkEnabled({ ...enabled });
-  };
 
-  const onChangePwdConfirm = (e) => {
-
-    const { value } = e.target;
-
-    setPwdConfirm(value.trim());
-
-    console.log(password, value);
-
-    if(value=== "" || value === undefined || value === null) {
-      setErrorTxt('');
-      e.target.parentElement.classList.remove("mc_checkmark");
-      enabled.checkPassword = false;
-    } else {
-      if(value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
-        if (password === value) {
+    // console.log("enabled >> " , enabled);
+    if(enabled.checkPassword && enabled.checkPasswordConfirm) {
+      if(name === "password") {
+        if((pwdConfirm === value && pwdConfirm !== "" && value !== "")){
+          enabled.checkPassword = true;
           setErrorTxt('');
           e.target.parentElement.classList.add("mc_checkmark");
-          enabled.checkPasswordConfirm = true;
+          e.target.parentNode.nextElementSibling.classList.add("mc_checkmark");
         } else {
-          setErrorTxt('비밀번호가 일치하지 않습니다.');
+          enabled.checkPassword = false;
+          if(pwdConfirm !== "") {
+            setErrorTxt('비밀번호가 일치하지 않습니다.');
+          }
           e.target.parentElement.classList.remove("mc_checkmark");
-          enabled.checkPasswordConfirm = false;
+          e.target.parentNode.nextElementSibling.classList.remove("mc_checkmark");
         }
       } else {
-        setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
-        e.target.parentElement.classList.remove("mc_checkmark");
-        enabled.checkPassword = false;
+        if(password === value) {
+          enabled.checkPasswordConfirm = true;
+          setErrorTxt('');
+          e.target.parentElement.classList.add("mc_checkmark");
+          e.target.parentNode.previousElementSibling.classList.add("mc_checkmark");
+        } else {
+          enabled.checkPasswordConfirm = false;
+          setErrorTxt('비밀번호가 일치하지 않습니다.');
+          e.target.parentElement.classList.remove("mc_checkmark");
+          e.target.parentNode.previousElementSibling.classList.remove("mc_checkmark");
+        }
       }
-    }
-
-
-    checkEnabled({ ...enabled });
-
-    console.log('enablexd> > ' , JSON.stringify(enabled));
-  }
+    } 
+  },[password,pwdConfirm, enabled]);
 
 
  
   const handleOnSubmit = e => {
     e.preventDefault();
 
-    const  { registForm } = { 'name' : name, 'email' :  email, 'password' : password, 'role_id' : '1'}
+    const  { registForm } = { 'name' : name, 'email' :  email, 'password' : password, 'role_id' : 'admin'}
 
     console.log("registForm >> " , registForm);
     // 회원가입 axios 연동
@@ -149,10 +138,11 @@ const SignUpPages = () => {
   // 회원가입 성공/실패 처리
   useEffect(() => {
     // effect
+    // console.log("password, passwordConfirm" , password, pwdConfirm);
     return () => {
       // cleanup
     }
-  }, [])
+  }, [password, pwdConfirm])
 
 
   return (
@@ -184,8 +174,8 @@ const SignUpPages = () => {
             type="password"
             name="password"
             placeholder="Password"
-            onChange={ onChangePassword }
             value={ password }
+            onChange={ onChangePassword }
           />
         </FormGroup>
         <FormGroup className="form-group_02">
@@ -193,8 +183,7 @@ const SignUpPages = () => {
             type="password"
             name="passwordConfirm"
             placeholder="PasswordConfirm"
-            onChange={ onChangePwdConfirm }
-            value={ pwdConfirm }
+            onChange={ onChangePassword }
           />
         </FormGroup>
         <p className="chk_validate">{ errorTxt }</p>
