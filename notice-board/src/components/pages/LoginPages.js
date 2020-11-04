@@ -24,6 +24,9 @@ const LoginPage = ({ history }) => {
         // if (!data.email) {
         //   history.push('/signUp');
         // }
+      })
+      .catch((error) => {
+        console.log(error.response);
       });
   };
 

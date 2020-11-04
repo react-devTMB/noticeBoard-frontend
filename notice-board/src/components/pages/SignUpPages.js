@@ -76,6 +76,9 @@ const SignUpPages = ({ history }) => {
       })
       .then((res) => {
         console.log('response', res);
+      })
+      .catch((error) => {
+        console.log(error.response);
       });
   };
 
