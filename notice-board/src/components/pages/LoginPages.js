@@ -6,12 +6,14 @@ import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_AUTH_URL, NAVER_AUTH_URL, GITHUB_AUTH_URL } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL } from '../common/Constants';
 import axios from 'axios';
 
 const LoginPage = ({ history }) => {
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+
+    //TODO : input validation
 
     await axios
       .post('/auth/login', {
@@ -43,9 +45,12 @@ const LoginPage = ({ history }) => {
         <Button type="submit" className="btn-lg btn-dark btn-block">
           Login
         </Button>
+      </Form>
+
+      <div className="social-wrap">
         <div className="text-center pt-3">-Or continue with your social account-</div>
         <FacebookLoginButton
-          onClick={() => window.open(FACEBOOK_AUTH_URL)}
+          onClick={(e) => (window.location = FACEBOOK_REDIRECT_URI)}
           className="mt-3 mb-3"
           style={{ fontSize: '15px' }}
           align="center"
@@ -67,7 +72,7 @@ const LoginPage = ({ history }) => {
           <span className="p-2">|</span>
           <a href="/forgot-password">Forgot Password</a>
         </div>
-      </Form>
+      </div>
     </div>
   );
 };
