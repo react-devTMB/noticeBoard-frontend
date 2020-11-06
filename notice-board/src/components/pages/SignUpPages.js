@@ -68,7 +68,7 @@ const SignUpPages = ({ history }) => {
     console.log('registForm >> ', registForm);
 
     await axios
-      .post('/auth/register', {
+      .post('/auth/signup', {
         name: registForm.nickName,
         email: registForm.email,
         password: registForm.password,
@@ -88,34 +88,16 @@ const SignUpPages = ({ history }) => {
         <Title text="welcome to TMB~!!"></Title>
         <FormGroup>
           {/* addclass mc_checkmark */}
-          <Input
-            type="text"
-            name="nickName"
-            placeholder="NickName"
-            onChange={validationCheck}
-            value={registForm.nickName}
-          />
+          <Input type="text" name="nickName" placeholder="NickName" onChange={validationCheck} value={registForm.nickName} />
         </FormGroup>
         <FormGroup>
           <Input type="email" name="email" placeholder="Email" onChange={validationCheck} value={registForm.email} />
         </FormGroup>
         <FormGroup>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={validationCheck}
-            value={registForm.password}
-          />
+          <Input type="password" name="password" placeholder="Password" onChange={validationCheck} value={registForm.password} />
         </FormGroup>
         <FormGroup className="form-group_02">
-          <Input
-            type="password"
-            name="passwordConfirm"
-            placeholder="PasswordConfirm"
-            onChange={validationCheck}
-            value={registForm.passwordConfirm}
-          />
+          <Input type="password" name="passwordConfirm" placeholder="PasswordConfirm" onChange={validationCheck} value={registForm.passwordConfirm} />
         </FormGroup>
         <p className="chk_validate">{errorTxt}</p>
         <Button disabled={errorTxt !== ''} className="btn-lg btn-dark btn-block" onClick={handleOnSubmit}>
