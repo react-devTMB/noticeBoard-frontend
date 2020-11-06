@@ -19,3 +19,14 @@ export const GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize?"
 
 export const EMAIL_REG = /^(([^<>()\].,;:\s@"]+(\.[^<>()\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 export const PWD_REG = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])(?=.*[0-9]).{8,16}$/;
+
+
+
+export const HTTP_STATUS = {
+    SUCCESS : 200,
+    BAD_REQUEST : 400,
+    UNAUTHORIZED : 403,
+    NOT_FOUND : 404,
+    NOT_ALLOWED_METHOD : 405,
+    INTERNAL_SERVER_ERROR : 500,
+};

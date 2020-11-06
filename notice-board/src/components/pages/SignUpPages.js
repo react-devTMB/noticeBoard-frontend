@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Title from '../common/Title';
 import axios from 'axios';
-import { EMAIL_REG, PWD_REG } from '../common/Constants';
+import { EMAIL_REG, HTTP_STATUS, PWD_REG } from '../common/Constants';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import LoadingBar from '../common/LoadingBar';
 
 const SignUpPages = ({history}) => {
 
-  
   const [ name, setName ] = useState('');                 // 닉네임
   const [ email, setEmail ] = useState('');               // 이메일
   const [ password, setPassword] = useState('');          // 비밀번호
@@ -65,10 +64,9 @@ const SignUpPages = ({history}) => {
     e.preventDefault();
 
     const { name, value } = e.target;
-    
+
     name === "password" ? setPassword(value.trim()) : setPwdConfirm(value.trim());
-    
-    // console.log("name , value, password, pwdConfirm >> " , name, value, password, pwdConfirm);
+
     if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
       name === "password" ? enabled.checkPassword = true :  enabled.checkPasswordConfirm = true;
       setErrorTxt('');
@@ -81,7 +79,6 @@ const SignUpPages = ({history}) => {
 
     checkEnabled({ ...enabled });
 
-    // console.log("enabled >> " , enabled);
     if(enabled.checkPassword && enabled.checkPasswordConfirm) {
       if(name === "password") {
         if((pwdConfirm === value && pwdConfirm !== "" && value !== "")){
@@ -110,32 +107,30 @@ const SignUpPages = ({history}) => {
           e.target.parentNode.previousElementSibling.classList.remove("mc_checkmark");
         }
       }
-    } 
+    }
   },[password,pwdConfirm, enabled]);
 
-
- 
   const handleOnSubmit = e => {
     e.preventDefault();
 
-    const registForm = { 
+    const registForm = {
       'email' : email,
       'password' : password,
-      'name' : name, 
+      'name' : name,
       'role_id' : 'admin'       // 임시
     };
 
 
     console.log("registForm >> " , JSON.stringify(registForm));
     setLoading(true);
-    axios.post('/api/v1/user', registForm)
+    axios.post('/user/signup', registForm)
       .then(res => {
         setLoading(false);
         console.log("submit , success res >>>> ", JSON.stringify(res));
-        if(res.status === 200) {      // 성공
+        if(res.status === HTTP_STATUS.SUCCESS) {      // 성공
           history.push('/login');
         } else {
-
+          //TODO:실패
         }
       })
       .catch(res => {
