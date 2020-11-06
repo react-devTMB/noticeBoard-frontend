@@ -1,12 +1,9 @@
 import React from 'react';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
-import styled from 'styled-components';
-import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
-import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_REDIRECT_URI, KAKAO_REDIRECT_URI } from '../common/Constants';
 import axios from 'axios';
 
 const LoginPage = ({ history }) => {
@@ -49,13 +46,13 @@ const LoginPage = ({ history }) => {
 
       <div className="social-wrap">
         <div className="text-center pt-3">-Or continue with your social account-</div>
-        <FacebookLoginButton onClick={(e) => (window.location = FACEBOOK_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center"></FacebookLoginButton>
+        <FacebookLoginButton onClick={() => (window.location = FACEBOOK_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center"></FacebookLoginButton>
         <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
-        <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
-        <KakaoBtn />
+        <GithubLoginButton onClick={() => (window.location = GITHUB_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
+        <button className="btn-social btn-kakao" onClick={(e) => (window.location = KAKAO_REDIRECT_URI)}></button>
 
         <a href={NAVER_AUTH_URL}>
-          <div className="btn_naver"></div>
+          <div className="btn-social btn-naver"></div>
         </a>
         <div className="text-center">
           <Link to="/signUp">Sign up</Link>
@@ -66,25 +63,5 @@ const LoginPage = ({ history }) => {
     </div>
   );
 };
-
-const KakaoBtn = styled(KakaoLogin)`
-  display: block;
-  border: 0px;
-  border-radius: 3px;
-  box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 2px;
-  color: #fff;
-  cursor: pointer;
-  margin: 1rem 5px;
-  width: calc(100% - 10px);
-  height: 50px;
-  padding: 0px 10px;
-  user-select: none;
-  background: #f7e600 url(${KakaoImage}) no-repeat left center;
-  background-size: auto 45px;
-  text-indent: -10000px;
-  &:hover {
-    box-shadow: 0 0px 15px 0 rgba(0, 0, 0, 0.2);
-  }
-`;
 
 export default LoginPage;

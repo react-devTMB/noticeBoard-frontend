@@ -437,7 +437,7 @@ a:visited {
 #naverIdLogin_loginButton:hover {
   box-shadow: 0 0px 15px 0 rgba(0, 0, 0, 0.2);
 }
-.btn_naver {
+.btn-social {
   display: block;
   border: 0px;
   border-radius: 3px;
@@ -449,13 +449,21 @@ a:visited {
   height: 50px;
   padding: 0px 10px;
   user-select: none;
-  background: #1ec800 url('./images/naver_button.jpg') no-repeat left center;
-  background-size: auto 65px;
+
   text-indent: -10000px;
 }
-.btn_naver:hover {
+.btn-social:hover {
   box-shadow: 0 0px 15px 0 rgba(0, 0, 0, 0.2);
 }
+.btn-naver {
+  background: #1ec800 url('./images/naver_button.jpg') no-repeat left center;
+  background-size: auto 65px;
+}
+.btn-kakao {
+  background: #f7e600 url('./images/kakao_login_medium_wide.png') no-repeat left center;
+  background-size: auto 45px;
+}
+
 .chk_validate {
   color: red;
   display: block;
