@@ -68,7 +68,7 @@ const SignUpPages = ({ history }) => {
     console.log('registForm >> ', registForm);
 
     await axios
-      .post('/auth/signup', {
+      .post('/user/signup', {
         name: registForm.nickName,
         email: registForm.email,
         password: registForm.password,

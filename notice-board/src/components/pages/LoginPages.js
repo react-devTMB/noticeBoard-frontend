@@ -16,7 +16,7 @@ const LoginPage = ({ history }) => {
     //TODO : input validation
 
     await axios
-      .post('/auth/login', {
+      .post('/user/login', {
         email: e.target.email.value,
         password: e.target.password.value,
       })
@@ -49,19 +49,9 @@ const LoginPage = ({ history }) => {
 
       <div className="social-wrap">
         <div className="text-center pt-3">-Or continue with your social account-</div>
-        <FacebookLoginButton
-          onClick={(e) => (window.location = FACEBOOK_REDIRECT_URI)}
-          className="mt-3 mb-3"
-          style={{ fontSize: '15px' }}
-          align="center"
-        ></FacebookLoginButton>
+        <FacebookLoginButton onClick={(e) => (window.location = FACEBOOK_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center"></FacebookLoginButton>
         <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
-        <GithubLoginButton
-          onClick={() => window.open(GITHUB_AUTH_URL)}
-          className="mt-3 mb-3"
-          style={{ fontSize: '15px' }}
-          align="center"
-        />
+        <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
 
         <a href={NAVER_AUTH_URL}>
