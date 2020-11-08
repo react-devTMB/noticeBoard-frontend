@@ -197,4 +197,4 @@ const SignUpPages = ({history}) => {
   );
 };
 
-  export default SignUpPages;
+export default SignUpPages;
