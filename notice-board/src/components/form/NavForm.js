@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {Nav, Button, Navbar, Form, FormControl} from 'react-bootstrap';
 import { Link } from "react-router-dom";
+import { isNull } from '../common/Util';
+import UserContext from '../context/User.context';
 
-const NavForm = () => {
-
+const NavForm = (value) => {
     const logout = () => {
         localStorage.clear();
         window.location.href = '/';
     }
 
+    const userInfos = useContext(UserContext);
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        console.log('userInfos >> ' , userInfos);
+        if(!isNull(userInfos)) {
+            console.log('userInfos.name >> ' , userInfos.name);
+            if(userInfos.name !== "") {
+                setUserName(userInfos.name);
+            }
+        }
+        return () => {}
+      }, [userInfos])
 
 
+    
 
 
     return (
@@ -22,9 +37,10 @@ const NavForm = () => {
                     <Link to="/notice"><Nav className="nav-link">Notice</Nav></Link>
                 </Nav>
                 <Nav>
-                    <Link to="/login"><Nav className="nav-link">Login</Nav></Link>
+                    { userName === "" &&<Link to="/login"><Nav className="nav-link">Login</Nav></Link>}
+                    { userName !== "" &&  <div >{ userName }</div>}
                     <Link to="/signUp"><Nav className="nav-link tmb_margin_20">Sign up</Nav></Link>
-                    <div onClick={ logout }>Logout</div>
+                    { userName !== "" && <div onClick={ logout }>Logout</div>}
                     {/* <Link to="/home"><Nav className="nav-link tmb_margin_20">Logout</Nav></Link> */}
                 </Nav>
             <Form inline>

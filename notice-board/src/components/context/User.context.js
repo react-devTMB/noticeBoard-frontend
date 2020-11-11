@@ -1,11 +1,5 @@
 import { createContext } from "react";
 
-const UserContext = createContext({
-  userInfo : {},
-  updateUserInfo: () => {},
-  number: 0,
-  increase: () => {},
-  decrease: () => {}
-});
+const UserContext = createContext();
 
 export default UserContext;
