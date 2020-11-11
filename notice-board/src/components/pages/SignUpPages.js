@@ -110,32 +110,35 @@ const SignUpPages = ({history}) => {
     }
   },[password,pwdConfirm, enabled]);
 
-  const handleOnSubmit = e => {
+  const handleOnSubmit = async e => {
     e.preventDefault();
 
     const registForm = {
       'email' : email,
       'password' : password,
       'name' : name,
-      'role_id' : 'admin'       // 임시
+      'role_id' : ''
+      // 'role_id' : 'admin'       // 임시
     };
 
 
     console.log("registForm >> " , JSON.stringify(registForm));
     setLoading(true);
-    axios.post('/user/signup', registForm)
+    await axios.post('/user/signup', registForm)
       .then(res => {
         setLoading(false);
         console.log("submit , success res >>>> ", JSON.stringify(res));
-        if(res.status === HTTP_STATUS.SUCCESS) {      // 성공
+        if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {      // 성공
           history.push('/login');
         } else {
-          //TODO:실패
+          setErrorTxt(res.data.errorTxt);
         }
       })
-      .catch(res => {
+      .catch(error => {
         setLoading(false);
-        console.log("fail >>>> ", JSON.stringify(res));
+        console.log("fail >>>> ", JSON.stringify(error));
+        
+        setErrorTxt(error.message);
       });
   }
 
@@ -146,52 +149,55 @@ const SignUpPages = ({history}) => {
     return () => {
       // cleanup
     }
-  }, [password, pwdConfirm])
+  }, [errorTxt])
 
 
   return (
     <div className="login_wrap">
       { loading && <LoadingBar/>}
       <Form className="login-form">
-        <Title text="welcome to TMB~!!"></Title>
-        <FormGroup>
-          {/* addclass mc_checkmark */}
-          <Input
-            type="text"
-            name="name"
-            placeholder="nickName"
-            onChange={ onChangeName }
-            value={ name }
-          />
-        </FormGroup>
-        <FormGroup>
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={ onChangeEmail }
-            value={ email }
-          />
-        </FormGroup>
-        <FormGroup>
-          <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={ password }
-            onChange={ onChangePassword }
-          />
-        </FormGroup>
-        <FormGroup className="form-group_02">
-          <Input
-            type="password"
-            name="passwordConfirm"
-            placeholder="PasswordConfirm"
-            onChange={ onChangePassword }
-          />
-        </FormGroup>
-        <p className="chk_validate">{ errorTxt }</p>
-        <Button disabled={  !enabled.checkName || !enabled.checkEmail || !enabled.checkPassword || !enabled.checkPasswordConfirm } className="btn-lg btn-dark btn-block" onClick={ handleOnSubmit }>Sign Up</Button>
+      { loading && <LoadingBar/>}
+        <div className="login-form-02">
+          <Title text="welcome to TMB~!!"></Title>
+          <FormGroup>
+            {/* addclass mc_checkmark */}
+            <Input
+              type="text"
+              name="name"
+              placeholder="nickName"
+              value={ name }
+              onChange={ onChangeName }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={ email }
+              onChange={ onChangeEmail }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={ password }
+              onChange={ onChangePassword }
+            />
+          </FormGroup>
+          <FormGroup className="form-group_02">
+            <Input
+              type="password"
+              name="passwordConfirm"
+              placeholder="PasswordConfirm"
+              onChange={ onChangePassword }
+            />
+          </FormGroup>
+          <p className="chk_validate">{ errorTxt }</p>
+          <Button disabled={  !enabled.checkName || !enabled.checkEmail || !enabled.checkPassword || !enabled.checkPasswordConfirm } className="btn-lg btn-dark btn-block" onClick={ handleOnSubmit }>Sign Up</Button>
+        </div>
       </Form>
     </div>
   );
