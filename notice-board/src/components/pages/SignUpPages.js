@@ -118,11 +118,8 @@ const SignUpPages = ({history}) => {
       'password' : password,
       'name' : name,
       'role_id' : ''
-      // 'role_id' : 'admin'       // 임시
     };
 
-
-    console.log("registForm >> " , JSON.stringify(registForm));
     setLoading(true);
     await axios.post('/user/signup', registForm)
       .then(res => {

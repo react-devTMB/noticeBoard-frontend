@@ -6,7 +6,7 @@ import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS } from '../common/Constants';
 import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 
@@ -19,7 +19,6 @@ const LoginPage = ({ history }) => {
     'checkEmail' : false,
     'checkPassword' : false,
   });
-
 
 
   const onChangeEmail = (e) => {
@@ -42,7 +41,7 @@ const LoginPage = ({ history }) => {
     e.preventDefault();
 
     const { value } = e.target;
-  
+
     if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
       enabled.checkPassword = true;
       setErrorTxt('');
@@ -67,14 +66,27 @@ const LoginPage = ({ history }) => {
       .post('/user/login', {
         email: e.target.email.value,
         password: e.target.password.value,
+      },{
+        headers: {
+            'authorization': localStorage.getItem('access_token'),
+            'Accept' : 'application/json',
+            'Content-Type': 'application/json'
+        }
       })
       .then((res) => {
         console.log('response', res);
         setLoading(false);
-
-        // if (!data.email) {
-        //   history.push('/signUp');
-        // }
+        if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {
+          if (res.data.token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;  // header에 accessToken 공통 추가
+            localStorage.setItem('access_token', res.data.token);
+            history.push('/home');
+          } else {
+            setErrorTxt('token error!!');
+          }
+        } else {
+          setErrorTxt(res.data.errorTxt);
+        }
       })
       .catch((error) => {
         console.log(error.response);
