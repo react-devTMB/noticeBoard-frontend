@@ -1,12 +1,17 @@
 
 import React from 'react';
+// import isNull from '../common/Util';
 // import { userInfo } from '../context/User.context';
 // import AlertDialog from '../common/Popup';
 
 const HomePage = (value) => {
 
     const checkLogin = (type) => {
-         // loading show
+        // loading show
+        // let userInfo = localStorage.getItem(userInfo);
+        // if(!isNull(userInfo)) {
+
+        // }
         // 자동로그인 여부 체크
         // 로그인이 되어있다면??
             // 

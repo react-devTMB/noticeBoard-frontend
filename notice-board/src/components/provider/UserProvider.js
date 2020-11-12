@@ -1,16 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import UserContext from "../context/User.context";
 // export const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
 
-  const userInfo = {
-    'name' : '',
-    'job' : 'developer'
-  }
+  // const userInfo = {
+  //   'name' : 'jungchun',
+  //   'job' : 'developer'
+  // }
+  const [userInfo, setUserInfo] = useState({});
 
+
+  // let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  // console.log('userProvider userInfo >>  ' , userInfo);
   return (
-    <UserContext.Provider value={ userInfo }> 
+    <UserContext.Provider value={ { userInfo , setUserInfo } }> 
       { children } 
     </UserContext.Provider>
 );

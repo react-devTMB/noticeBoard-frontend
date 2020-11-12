@@ -82,8 +82,10 @@ const LoginPage = ({ history }) => {
         if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {
           if (res.data.token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;  // header에 accessToken 공통 추가
+            // accessToken, user정보 저장
             localStorage.setItem('access_token', res.data.token);
-            localStorage.setItem('userInfo' , jwt_decode.decode(res.data.token))
+            localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(res.data.token)));
+
             history.push('/home');
           } else {
             setErrorTxt('token error!!');
