@@ -5,7 +5,7 @@ import UserContext from "../context/User.context";
 const UserProvider = ({ children }) => {
 
   const userInfo = {
-    'name' : 'jekim',
+    'name' : '',
     'job' : 'developer'
   }
 

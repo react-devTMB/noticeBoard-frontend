@@ -9,6 +9,8 @@ import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
 import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS } from '../common/Constants';
 import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
+import client from '../../lib/api/client';
+import jwt_decode from "jwt-decode";
 
 const LoginPage = ({ history }) => {
 
@@ -62,15 +64,16 @@ const LoginPage = ({ history }) => {
     console.log(e);
     setLoading(true);
 
-    await axios
+
+    await client
       .post('/user/login', {
         email: e.target.email.value,
         password: e.target.password.value,
       },{
         headers: {
-            'authorization': localStorage.getItem('access_token'),
-            'Accept' : 'application/json',
-            'Content-Type': 'application/json'
+          'authorization': localStorage.getItem('access_token'),
+          'Accept' : 'application/json',
+          'Content-Type': 'application/json'
         }
       })
       .then((res) => {
@@ -80,6 +83,7 @@ const LoginPage = ({ history }) => {
           if (res.data.token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;  // header에 accessToken 공통 추가
             localStorage.setItem('access_token', res.data.token);
+            localStorage.setItem('userInfo' , jwt_decode.decode(res.data.token))
             history.push('/home');
           } else {
             setErrorTxt('token error!!');

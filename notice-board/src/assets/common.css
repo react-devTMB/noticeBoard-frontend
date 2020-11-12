@@ -467,5 +467,8 @@ a:visited {
 .makeStyles-root-1 + .login-form , .makeStyles-root-1 ~ .social-wrap, .makeStyles-root-1 + .login-form-02 { 
   opacity: 0;
 }
+.username {
+  color: #3f51b5;
+}
 
 
