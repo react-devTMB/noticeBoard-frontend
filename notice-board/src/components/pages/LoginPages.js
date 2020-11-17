@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useContext } from 'react';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
 import styled from 'styled-components';
@@ -11,6 +11,7 @@ import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 import client from '../../lib/api/client';
 import jwt_decode from "jwt-decode";
+import UserContext from '../context/User.context';
 
 const LoginPage = ({ history }) => {
 
@@ -22,6 +23,7 @@ const LoginPage = ({ history }) => {
     'checkPassword' : false,
   });
 
+  const { settingUserInfo } = useContext(UserContext);
 
   const onChangeEmail = (e) => {
     const { value } = e.target;
@@ -64,7 +66,6 @@ const LoginPage = ({ history }) => {
     console.log(e);
     setLoading(true);
 
-
     await client
       .post('/user/login', {
         email: e.target.email.value,
@@ -85,6 +86,8 @@ const LoginPage = ({ history }) => {
             // accessToken, user정보 저장
             localStorage.setItem('access_token', res.data.token);
             localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(res.data.token)));
+            // console.log('userInfo >> ' ,JSON.stringify(jwt_decode(res.data.token)));
+            settingUserInfo(JSON.stringify(jwt_decode(res.data.token)));
 
             history.push('/home');
           } else {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import {Nav, Button, Navbar, Form, FormControl} from 'react-bootstrap';
 import { Link } from "react-router-dom";
 // import { isNull } from '../common/Util';
@@ -6,29 +6,28 @@ import UserContext from '../context/User.context';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
 const NavForm = () => {
+
+    const { userInfo, isAuthenticated } = useContext(UserContext);
+    let userName = "";
+
+    if(isAuthenticated) {
+        if(userInfo !== null && Object.entries(userInfo).length !== 0 && isAuthenticated) {
+            userName = JSON.parse(userInfo).name;
+        }
+    }
     
+
+
     const logout = () => {
         window.localStorage.clear();
         window.location.href = '/';
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('userInfo');
         // UserContext 초기화
-        createContext({userInfo: {}})
+        createContext(null)
     }
 
-    const userCtx = useContext(UserContext);
-    const [userName, setUserName] = useState('');
-
-    useEffect(() => {
-        console.log('@@@ userInfos >> ' ,  JSON.stringify(userCtx));
-        if(userCtx.userInfo !== null) {
-        // if(!isNull(userCtx.userInfo)) {
-            console.log('userInfos.name >> ' , userCtx.userInfo.name);
-            if(userCtx.userInfo.name !== "") {
-                setUserName(userCtx.userInfo.name);
-            }
-        }
-        return () => {}
-    }, [userCtx])
-
+    
 
     return (
         <Navbar bg="dark" variant="dark">
@@ -46,7 +45,7 @@ const NavForm = () => {
                                 <span>님</span>
                             </div>
                             <div className="nav-link">
-                                <span><PersonOutlineIcon></PersonOutlineIcon>내 정보 조회</span>
+                                <span><PersonOutlineIcon></PersonOutlineIcon>My info</span>
                             </div>
                             <div className="nav-link tmb_margin_20" onClick={ logout }>Logout</div>
                         </Nav>

@@ -418,6 +418,8 @@ a:visited {
   border-color: #000;
   text-decoration: none;
   outline: 0;
+  box-shadow: none;
+  border : 2px solid #000
 }
 #naverIdLogin_loginButton {
   display: block;

@@ -8,16 +8,17 @@ import SignUpPages from './components/pages/SignUpPages';
 import UserProvider from './components/provider/UserProvider';
 
 const App = () => {
+
   return (
     <>
-    <UserProvider>
       <BrowserRouter>
-        <NavForm />
-        <Route exact path={['/', '/home']} component={HomePage}></Route>
-        <Route exact path="/login" component={LoginPage}></Route>
-        <Route exact path="/signUp" component={SignUpPages}></Route>
+        <UserProvider>
+          <NavForm/>
+          <Route exact path={['/', '/home']} component={HomePage}></Route>
+          <Route exact path="/login" component={LoginPage}></Route>
+          <Route exact path="/signUp" component={SignUpPages}></Route>
+        </UserProvider>
       </BrowserRouter>
-    </UserProvider>
     </>
   );
 };
