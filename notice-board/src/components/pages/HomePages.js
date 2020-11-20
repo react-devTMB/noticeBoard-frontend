@@ -1,11 +1,10 @@
 
-import React, { useContext } from 'react';
-import UserContext from '../context/User.context';
+import React from 'react';
 
 const HomePage = (value) => {
 
-    const { settingUserInfo } = useContext(UserContext);
-    settingUserInfo(localStorage.getItem('userInfo'));
+    // const { settingUserInfo } = useContext(UserContext);
+    // settingUserInfo(localStorage.getItem('userInfo'));
 
     const checkLogin = (type) => {
     };

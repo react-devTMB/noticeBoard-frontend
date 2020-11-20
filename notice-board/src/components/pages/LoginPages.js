@@ -6,7 +6,7 @@ import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS, NAVER_REDIRET_URI } from '../common/Constants';
 import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 import client from '../../lib/api/client';
@@ -16,7 +16,7 @@ import UserContext from '../context/User.context';
 const LoginPage = ({ history }) => {
 
 
-  const [ loading, setLoading ] = useState(false);        // 로딩바
+  const [ loading, setLoading ] = useState(true);          // 로딩바
   const [ errorTxt, setErrorTxt] = useState('');          // 에러메세지
   const [ enabled, checkEnabled ] = useState({
     'checkEmail' : false,
@@ -24,6 +24,34 @@ const LoginPage = ({ history }) => {
   });
 
   const { settingUserInfo } = useContext(UserContext);
+
+  const checkAutoLogin = async () => {
+
+    // re-rendering limit
+    if(loading) {
+      if(window.location.href.split("&")[1] !== undefined) {
+        const auth_code = window.location.href.split("?code=")[1].split("&state")[0];
+        if(auth_code !== null && auth_code !== undefined && auth_code !== "") {
+          await axios
+          .get('/oauth/naver')
+          .then((res) => {
+            console.log('naver oauth res >> ' , JSON.stringify(res));
+          })
+          .catch((error) => {
+            console.log('naver oauth error >> ', error.response);
+            setLoading(false);
+          })
+        } else {
+
+        }
+
+      } else {
+        setLoading(false);
+      }
+    }
+  }
+
+  checkAutoLogin();
 
   const onChangeEmail = (e) => {
     const { value } = e.target;
@@ -136,10 +164,10 @@ const LoginPage = ({ history }) => {
         <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
-
-        <a href={NAVER_AUTH_URL}>
+        <div onClick={(e) => (window.location = NAVER_REDIRET_URI)}  className="btn_naver"></div>
+        {/* <a href={NAVER_AUTH_URL}>
           <div className="btn_naver"></div>
-        </a>
+        </a> */}
         <div className="text-center">
           <Link to="/signUp">Sign up</Link>
           <span className="p-2">|</span>
