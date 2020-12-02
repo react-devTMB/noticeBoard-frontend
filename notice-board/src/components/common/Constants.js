@@ -1,6 +1,6 @@
 export const BASE_URL = 'http://localhost:3000/login';
 export const FACEBOOK_REDIRECT_URI = 'http://localhost:3000/oauth/facebook';
-export const NAVER_REDIRET_URI = 'http://localhost:3001/oauth/naver';
+export const NAVER_REDIRET_URI = 'http://localhost:3001/oauth/naver/callback';
 
 export const OAUTH2_REDIRECT_URI = 'http://localhost:3001/oauth2/redirect';
 export const OAUTH2_REDIRECT_URI_02 = 'http://localhost:3000/login';

@@ -6,7 +6,7 @@ import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_REDIRECT_URI, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS, NAVER_REDIRET_URI } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG, HTTP_STATUS, NAVER_AUTH_URL } from '../common/Constants';
 import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 import client from '../../lib/api/client';
@@ -30,17 +30,50 @@ const LoginPage = ({ history }) => {
     // re-rendering limit
     if(loading) {
       if(window.location.href.split("&")[1] !== undefined) {
-        const auth_code = window.location.href.split("?code=")[1].split("&state")[0];
-        if(auth_code !== null && auth_code !== undefined && auth_code !== "") {
-          await axios
-          .get('/oauth/naver')
-          .then((res) => {
-            console.log('naver oauth res >> ' , JSON.stringify(res));
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        console.log('code >> ', code, state);
+        if(code !== null && code !== undefined && code !== "") {
+          axios.post('oauth/naver/callback' , {
+            code: code,
+            state : state
+          }).then(function(res) {
+            console.log('res >> ' , (res.data.body));
+            if( res.status === HTTP_STATUS.SUCCESS) {
+              // parseJSON 하기
+              const accessToken = res.data.body.access_token;
+            //   if (accessToken) {
+
+            //     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;  // header에 accessToken 공통 추가
+            //   //   // accessToken, user정보 저장
+            //     localStorage.setItem('access_token', accessToken);
+            //     localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(accessToken)));
+            //     console.log('userInfo >> ' ,JSON.stringify(jwt_decode(accessToken)));
+            //     settingUserInfo(JSON.stringify(jwt_decode(accessToken)));
+    
+            //     history.push('/home');
+            //   } else {
+            //     setErrorTxt('token error!!');
+            //   }
+            } else {
+              setErrorTxt(res.data.errorTxt);
+            }
+          }).catch((error) => {
+
           })
-          .catch((error) => {
-            console.log('naver oauth error >> ', error.response);
-            setLoading(false);
-          })
+          // axios.get('oauth/naver/callback', {
+          //   params: {
+          //     code: code,
+          //     state : state
+          //   }
+          // })
+          // .then(function (response) {
+          //   console.log(response);
+          // }).catch((error) => {
+          //   console.log('naver oauth error >> ', error.response);
+          //   setLoading(false);
+          // })
         } else {
 
         }
@@ -164,7 +197,7 @@ const LoginPage = ({ history }) => {
         <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
-        <div onClick={(e) => (window.location = NAVER_REDIRET_URI)}  className="btn_naver"></div>
+        <div onClick={(e) => (window.location = NAVER_AUTH_URL)}  className="btn_naver"></div>
         {/* <a href={NAVER_AUTH_URL}>
           <div className="btn_naver"></div>
         </a> */}
