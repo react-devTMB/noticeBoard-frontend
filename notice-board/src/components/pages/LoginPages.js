@@ -6,56 +6,54 @@ import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
 import Title from '../common/Title';
 import KakaoImage from '../../assets/images/kakao_login_medium_wide.png';
-import { FACEBOOK_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG } from '../common/Constants';
+import { FACEBOOK_REDIRECT_URI, GOOGLE_REDIRECT_URI, NAVER_AUTH_URL, GITHUB_AUTH_URL, EMAIL_REG, PWD_REG } from '../common/Constants';
 import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 
 const LoginPage = ({ history }) => {
-
-
-  const [ loading, setLoading ] = useState(false);        // 로딩바
-  const [ errorTxt, setErrorTxt] = useState('');          // 에러메세지
-  const [ enabled, checkEnabled ] = useState({
-    'checkEmail' : false,
-    'checkPassword' : false,
+  const [loading, setLoading] = useState(false); // 로딩바
+  const [errorTxt, setErrorTxt] = useState(''); // 에러메세지
+  const [enabled, checkEnabled] = useState({
+    checkEmail: false,
+    checkPassword: false,
   });
-
-
 
   const onChangeEmail = (e) => {
     const { value } = e.target;
 
     if (EMAIL_REG.test(value)) {
       setErrorTxt('');
-      e.target.parentElement.classList.add("mc_checkmark");
+      e.target.parentElement.classList.add('mc_checkmark');
       enabled.checkEmail = true;
     } else {
       setErrorTxt('이메일 형식이 아닙니다.');
-      e.target.parentElement.classList.remove("mc_checkmark");
+      e.target.parentElement.classList.remove('mc_checkmark');
       enabled.checkEmail = false;
-    };
+    }
 
     checkEnabled({ ...enabled });
   };
 
-  const onChangePassword = useCallback(e => {
-    e.preventDefault();
+  const onChangePassword = useCallback(
+    (e) => {
+      e.preventDefault();
 
-    const { value } = e.target;
-  
-    if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
-      enabled.checkPassword = true;
-      setErrorTxt('');
-      e.target.parentElement.classList.add("mc_checkmark");
-    } else {
-      setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
-      e.target.parentElement.classList.remove("mc_checkmark");
-      enabled.checkPassword = false;
-    }
+      const { value } = e.target;
 
-    checkEnabled({ ...enabled });
+      if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
+        enabled.checkPassword = true;
+        setErrorTxt('');
+        e.target.parentElement.classList.add('mc_checkmark');
+      } else {
+        setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
+        e.target.parentElement.classList.remove('mc_checkmark');
+        enabled.checkPassword = false;
+      }
 
-    },[enabled]);
+      checkEnabled({ ...enabled });
+    },
+    [enabled]
+  );
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
@@ -84,35 +82,24 @@ const LoginPage = ({ history }) => {
 
   return (
     <div className="login_wrap">
-      { loading && <LoadingBar/>}
+      {loading && <LoadingBar />}
       <Form className="login-form" onSubmit={handleOnSubmit}>
         <Title text="welcome to TMB~!!"></Title>
         <FormGroup>
-          <Input 
-            type="text" 
-            name="email" 
-            placeholder="Email" 
-            className="mc_checkmark"
-            onChange={ onChangeEmail }
-          />
+          <Input type="text" name="email" placeholder="Email" className="mc_checkmark" onChange={onChangeEmail} />
         </FormGroup>
         <FormGroup>
-          <Input 
-            type="password" 
-            name="password" 
-            placeholder="Password"
-            onChange={ onChangePassword }
-          />
+          <Input type="password" name="password" placeholder="Password" onChange={onChangePassword} />
         </FormGroup>
-        <p className="chk_validate">{ errorTxt }</p>
-        <Button disabled={ !enabled.checkEmail || !enabled.checkPassword } type="submit" className="btn-lg btn-dark btn-block">
+        <p className="chk_validate">{errorTxt}</p>
+        <Button disabled={!enabled.checkEmail || !enabled.checkPassword} type="submit" className="btn-lg btn-dark btn-block">
           Login
         </Button>
       </Form>
       <div className="social-wrap">
         <div className="text-center pt-3">-Or continue with your social account-</div>
         <FacebookLoginButton onClick={(e) => (window.location = FACEBOOK_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center"></FacebookLoginButton>
-        <GoogleLoginButton className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
+        <GoogleLoginButton onClick={(e) => (window.location = GOOGLE_REDIRECT_URI)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
 
