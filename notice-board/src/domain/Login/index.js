@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Form, FormGroup, Input } from 'reactstrap';
+import { Form, FormGroup, Input } from 'reactstrap';
+import axios from 'axios';
 
 import LoadingBar from '../../components/common/LoadingBar';
 import Title from '../../components/common/Title';
@@ -19,7 +20,7 @@ const Login = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-  const handleChangeEmail = (e) => {
+  const onChangeEmail = (e) => {
     const { value, parentElement } = e.target;
 
     if (EMAIL_REG.test(value)) {
@@ -47,19 +48,30 @@ const Login = () => {
       setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
       setIsPasswordValid(false);
     }
-  });
+  }, []);
 
   const doLogin = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
+
+    const response = await axios.post('/user/login', {
+      email: e.target.email.value,
+      password: e.target.password.value,
+    });
+    const json = await response.json();
+    console.log(JSON.stringify(json, null, 4));
+
+    setLoading(false);
   };
 
   return (
     <div className="login_wrap">
-      {loading && LoadingBar}
+      {loading && <LoadingBar />}
       <Form className="login-form" onSubmit={doLogin}>
         <Title title="welcome to TMB~!!"></Title>
         <FormGroup>
-          <Input className="mc_checkmark" type="email" name="email" placeholder="Email" onChange={handleChangeEmail} />
+          <Input className="mc_checkmark" type="email" name="email" placeholder="Email" onChange={onChangeEmail} />
         </FormGroup>
         <FormGroup>
           <Input type="password" name="password" placeholder="Password" onChange={onChangePassword} />
