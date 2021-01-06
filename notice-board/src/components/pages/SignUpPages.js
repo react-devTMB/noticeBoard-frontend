@@ -118,11 +118,8 @@ const SignUpPages = ({history}) => {
       'password' : password,
       'name' : name,
       'role_id' : ''
-      // 'role_id' : 'admin'       // 임시
     };
 
-
-    console.log("registForm >> " , JSON.stringify(registForm));
     setLoading(true);
     await axios.post('/user/signup', registForm)
       .then(res => {
@@ -145,7 +142,6 @@ const SignUpPages = ({history}) => {
   // 회원가입 성공/실패 처리
   useEffect(() => {
     // effect
-
     // console.log("password, passwordConfirm" , password, pwdConfirm);
     return () => {
       // cleanup
@@ -155,6 +151,7 @@ const SignUpPages = ({history}) => {
 
   return (
     <div className="login_wrap">
+      { loading && <LoadingBar/>}
       <Form className="login-form">
       { loading && <LoadingBar/>}
         <div className="login-form-02">
