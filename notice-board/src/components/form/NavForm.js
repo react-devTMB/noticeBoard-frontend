@@ -1,33 +1,30 @@
 import React, { createContext, useContext } from 'react';
 import {Nav, Button, Navbar, Form, FormControl} from 'react-bootstrap';
 import { Link } from "react-router-dom";
-// import { isNull } from '../common/Util';
 import UserContext from '../context/User.context';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import CreateIcon from '@material-ui/icons/Create';
 
 const NavForm = () => {
 
+    let userName = "";  //  사용자 이름
     const { userInfo, isAuthenticated } = useContext(UserContext);
-    let userName = "";
 
     if(isAuthenticated) {
-        if(userInfo !== null && Object.entries(userInfo).length !== 0 && isAuthenticated) {
-            userName = JSON.parse(userInfo).name;
-        }
+        userName = JSON.parse(userInfo).name;
     }
-    
-
 
     const logout = () => {
         window.localStorage.clear();
         window.location.href = '/';
         localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         localStorage.removeItem('userInfo');
-        // UserContext 초기화
-        createContext(null)
+
+        createContext(null) // UserContext 초기화
     }
 
-    
 
     return (
         <Navbar bg="dark" variant="dark">
@@ -38,7 +35,7 @@ const NavForm = () => {
                     <Link to="/notice"><Nav className="nav-link">Notice</Nav></Link>
                 </Nav>
                 {
-                    userName ? (
+                    isAuthenticated ? (
                         <Nav>
                             <div className="nav-link">
                                 <strong className="username"> { userName } </strong>
@@ -47,7 +44,12 @@ const NavForm = () => {
                             <div className="nav-link">
                                 <span><PersonOutlineIcon></PersonOutlineIcon>My info</span>
                             </div>
-                            <div className="nav-link tmb_margin_20" onClick={ logout }>Logout</div>
+                            <Link to="/post">
+                                <div className="nav-link"><span><CreateIcon></CreateIcon>Post</span> </div>
+                            </Link>
+                            <div className="nav-link tmb_margin_20" onClick={ logout }>
+                                <span><ExitToAppIcon></ExitToAppIcon>Logout</span>
+                            </div>
                         </Nav>
                     ) : (
                         <Nav>

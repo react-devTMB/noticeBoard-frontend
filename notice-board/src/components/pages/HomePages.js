@@ -1,25 +1,25 @@
 
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import UserContext from '../context/User.context';
 
 const HomePage = (value) => {
 
-    // const { settingUserInfo } = useContext(UserContext);
-    // settingUserInfo(localStorage.getItem('userInfo'));
+    const { settingUserInfo } = useContext(UserContext);
+    const accessToken  = localStorage.getItem('access_token') !== null ?  localStorage.getItem('access_token') : null;
 
-    const checkLogin = (type) => {
-    };
-
+    useEffect(() => {
+      if(accessToken !== null && accessToken !== undefined) {
+      const userInfo  = localStorage.getItem('userInfo') !== null ?  localStorage.getItem('userInfo') : null;
+    //   console.log('userInfo >> ' , userInfo);
+      if(userInfo !== null && userInfo !== undefined) {
+        settingUserInfo(userInfo);
+      }
+    }
+      return () => {}
+    }, [accessToken, settingUserInfo])
     return(
         <div>
-            <span>HomePage</span>
-            <br />
-            <div onClick={ checkLogin('gokomong') }>gokomong niticeBoard</div>
-            <br />
-            <div onClick={ checkLogin('jglee') }>jglee niticeBoard</div>
-            <br />
-            <div onClick={ checkLogin('jekim') }>jekim niticeBoard</div>
-            <br />
-            {/* <AlertDialog/> */}
+           <div className="title_wrapper"><span className="mc_title_basic01">HomePage</span></div>
         </div>
     )
 }

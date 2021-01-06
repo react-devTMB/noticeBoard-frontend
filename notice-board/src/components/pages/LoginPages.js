@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
 import { FacebookLoginButton, GoogleLoginButton, GithubLoginButton } from 'react-social-login-buttons';
 import styled from 'styled-components';
@@ -11,7 +11,6 @@ import axios from 'axios';
 import LoadingBar from '../common/LoadingBar';
 import client from '../../lib/api/client';
 import jwt_decode from "jwt-decode";
-import UserContext from '../context/User.context';
 
 const LoginPage = ({ history }) => {
 
@@ -23,7 +22,6 @@ const LoginPage = ({ history }) => {
     'checkPassword' : false,
   });
 
-  const { settingUserInfo } = useContext(UserContext);
 
   const checkAutoLogin = async () => {
 
@@ -33,51 +31,32 @@ const LoginPage = ({ history }) => {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const state = urlParams.get('state');
-        console.log('code >> ', code, state);
         if(code !== null && code !== undefined && code !== "") {
-          axios.post('oauth/naver/callback' , {
+          await axios.post('oauth/naver/callback', {
             code: code,
             state : state
           }).then(function(res) {
-            console.log('res >> ' , (res.data.body));
-            if( res.status === HTTP_STATUS.SUCCESS) {
-              // parseJSON 하기
-              const accessToken = res.data.body.access_token;
-            //   if (accessToken) {
+            setLoading(false);
+            // console.log('resData >>>', JSON.stringify(res));
+            if(res.status === HTTP_STATUS.SUCCESS) {
 
-            //     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;  // header에 accessToken 공통 추가
-            //   //   // accessToken, user정보 저장
-            //     localStorage.setItem('access_token', accessToken);
-            //     localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(accessToken)));
-            //     console.log('userInfo >> ' ,JSON.stringify(jwt_decode(accessToken)));
-            //     settingUserInfo(JSON.stringify(jwt_decode(accessToken)));
-    
-            //     history.push('/home');
-            //   } else {
-            //     setErrorTxt('token error!!');
-            //   }
+              localStorage.setItem('access_token' , JSON.stringify(res.headers.access_token));
+              localStorage.setItem('refresh_token' , JSON.stringify(res.headers.refresh_token));
+              localStorage.setItem('userInfo' , JSON.stringify(res.data.response));
+
+              history.push('/home');
+
             } else {
               setErrorTxt(res.data.errorTxt);
             }
           }).catch((error) => {
-
+            setErrorTxt('Login error');
+            setLoading(false);
           })
-          // axios.get('oauth/naver/callback', {
-          //   params: {
-          //     code: code,
-          //     state : state
-          //   }
-          // })
-          // .then(function (response) {
-          //   console.log(response);
-          // }).catch((error) => {
-          //   console.log('naver oauth error >> ', error.response);
-          //   setLoading(false);
-          // })
         } else {
-
+          setErrorTxt('Code error');
+          setLoading(false);
         }
-
       } else {
         setLoading(false);
       }
@@ -119,12 +98,11 @@ const LoginPage = ({ history }) => {
 
     checkEnabled({ ...enabled });
 
-    },[enabled]);
+  },[enabled]);
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(e);
     setLoading(true);
 
     await client
@@ -133,13 +111,13 @@ const LoginPage = ({ history }) => {
         password: e.target.password.value,
       },{
         headers: {
-          'authorization': localStorage.getItem('access_token'),
+          'Authorization': localStorage.getItem('access_token'),
           'Accept' : 'application/json',
           'Content-Type': 'application/json'
         }
       })
       .then((res) => {
-        console.log('response', res);
+        // console.log('Login response >>>', JSON.stringify(res));
         setLoading(false);
         if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {
           if (res.data.token) {
@@ -147,8 +125,6 @@ const LoginPage = ({ history }) => {
             // accessToken, user정보 저장
             localStorage.setItem('access_token', res.data.token);
             localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(res.data.token)));
-            // console.log('userInfo >> ' ,JSON.stringify(jwt_decode(res.data.token)));
-            settingUserInfo(JSON.stringify(jwt_decode(res.data.token)));
 
             history.push('/home');
           } else {
@@ -170,18 +146,18 @@ const LoginPage = ({ history }) => {
       <Form className="login-form" onSubmit={handleOnSubmit}>
         <Title text="welcome to TMB~!!"></Title>
         <FormGroup>
-          <Input 
-            type="text" 
-            name="email" 
-            placeholder="Email" 
+          <Input
+            type="text"
+            name="email"
+            placeholder="Email"
             className="mc_checkmark"
             onChange={ onChangeEmail }
           />
         </FormGroup>
         <FormGroup>
-          <Input 
-            type="password" 
-            name="password" 
+          <Input
+            type="password"
+            name="password"
             placeholder="Password"
             onChange={ onChangePassword }
           />
@@ -198,9 +174,6 @@ const LoginPage = ({ history }) => {
         <GithubLoginButton onClick={() => window.open(GITHUB_AUTH_URL)} className="mt-3 mb-3" style={{ fontSize: '15px' }} align="center" />
         <KakaoBtn />
         <div onClick={(e) => (window.location = NAVER_AUTH_URL)}  className="btn_naver"></div>
-        {/* <a href={NAVER_AUTH_URL}>
-          <div className="btn_naver"></div>
-        </a> */}
         <div className="text-center">
           <Link to="/signUp">Sign up</Link>
           <span className="p-2">|</span>

@@ -6,7 +6,8 @@ const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const settingUserInfo = (prev) => {
+  const settingUserInfo = () => {
+
     if(localStorage.getItem('userInfo') === null) {
       setIsAuthenticated(false);
     } else {
@@ -16,8 +17,8 @@ const UserProvider = ({ children }) => {
   }
 
   return (
-    <UserContext.Provider value={ { userInfo , settingUserInfo, isAuthenticated } }> 
-      { children } 
+    <UserContext.Provider value={ { userInfo , settingUserInfo, isAuthenticated } }>
+      { children }
     </UserContext.Provider>
   );
 

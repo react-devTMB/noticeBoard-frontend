@@ -6,6 +6,7 @@ import LoginPage from './components/pages/LoginPages';
 import HomePage from './components/pages/HomePages';
 import SignUpPages from './components/pages/SignUpPages';
 import UserProvider from './components/provider/UserProvider';
+import PostPages from './components/pages/PostPages';
 
 const App = () => {
 
@@ -17,6 +18,7 @@ const App = () => {
           <Route exact path={['/', '/home']} component={HomePage}></Route>
           <Route exact path="/login" component={LoginPage}></Route>
           <Route exact path="/signUp" component={SignUpPages}></Route>
+          <Route exact path="/post" component={PostPages}></Route>
         </UserProvider>
       </BrowserRouter>
     </>

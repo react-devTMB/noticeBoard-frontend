@@ -116,7 +116,7 @@ body {
 .mc_title_basic01 {
   position: relative;
   margin-top: 30px;
-  font-size: 1.7em;
+  font-size: 2em;
   font-weight: bold;
   text-align: center;
   padding: 20px;
@@ -475,6 +475,26 @@ a:visited {
 .MuiSvgIcon-root {
   color: #17a2b8;
   vertical-align: top;
+}
+.rdw-editor-main {
+  border: 1px solid #f1f1f1;
+  background-color: #fff;
+  height: 450px;
+}
+
+.MuiInput-root {
+  margin-bottom: 30px;
+}
+.MuiInput-root input {
+  height: 1.5876;
+  font-size: 20px;
+}
+.title_wrapper {
+  margin: 30px;
+}
+
+.container .makeStyles-root-1 {
+  margin-bottom: 40px;
 }
 
 
