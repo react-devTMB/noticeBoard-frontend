@@ -1,0 +1,19 @@
+{
+  "functional-imrc": {
+    "prefix": "func imrc",
+    "body": [
+      "import React from 'react';",
+      "",
+      "const ${1:TM_FILENAME_BASE} = () => {",
+      "  return (",
+      "    <>",
+      "      <div>${1:TM_FILENAME_BASE}</div>",
+      "    </>",
+      "  );",
+      "};",
+      "",
+      "export default ${1:TM_FILENAME_BASE};"
+    ],
+    "description": "import react with functional components"
+  }
+}

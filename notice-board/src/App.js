@@ -1,19 +1,22 @@
 import React from 'react';
-import './App.css';
 import { BrowserRouter, Route } from 'react-router-dom';
+
+import { GlobalStyle } from './App.styles';
 import NavForm from './components/form/NavForm';
-import LoginPage from './components/pages/LoginPages';
-import HomePage from './components/pages/HomePages';
-import SignUpPages from './components/pages/SignUpPages';
+import Home from './domain/Home';
+import Login from './domain/Login';
+import SignUp from './domain/SignUp';
+// import SignUp from './components/pages/SignUpPages';
 
 const App = () => {
   return (
     <>
+      <GlobalStyle />
       <BrowserRouter>
         <NavForm />
-        <Route exact path={['/', '/home']} component={HomePage}></Route>
-        <Route exact path="/login" component={LoginPage}></Route>
-        <Route exact path="/signUp" component={SignUpPages}></Route>
+        <Route exact path={['/', '/home']} component={Home}></Route>
+        <Route exact path="/login" component={Login}></Route>
+        <Route exact path="/signUp" component={SignUp}></Route>
       </BrowserRouter>
     </>
   );

@@ -1,108 +1,203 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Title from '../common/Title';
-import { EMAIL_REG, PWD_REG } from '../common/Constants';
-import { Button, Form, FormGroup, Input } from 'reactstrap';
 import axios from 'axios';
+import { EMAIL_REG, HTTP_STATUS, PWD_REG } from '../common/Constants';
+import { Button, Form, FormGroup, Input } from 'reactstrap';
+import LoadingBar from '../common/LoadingBar';
 
-const SignUpPages = ({ history }) => {
-  const [errorTxt, setErrorTxt] = useState('');
+const SignUpPages = ({history}) => {
 
-  const [registForm, setRegistForm] = useState({
-    nickName: '',
-    email: '',
-    password: '',
-    passwordConfirm: '',
+  const [ name, setName ] = useState('');                 // 닉네임
+  const [ email, setEmail ] = useState('');               // 이메일
+  const [ password, setPassword] = useState('');          // 비밀번호
+  const [ pwdConfirm, setPwdConfirm ] = useState('');     // 비밀번호 확인
+  const [ errorTxt, setErrorTxt] = useState('');          // 에러메세지
+
+  const [ enabled, checkEnabled ] = useState({
+    'checkName' : false,
+    'checkEmail' : false,
+    'checkPassword' : false,
+    'checkPasswordConfirm' : false
   });
 
-  const validationCheck = (e) => {
-    const { name, value } = e.target;
+  const [ loading, setLoading ] = useState(false);
 
-    console.log('registForm >> ', registForm);
-    switch (e.target.name) {
-      case 'nickName':
-        if (value.length > 0 && value.length <= 8) {
-          setErrorTxt('');
-          e.target.parentElement.classList.add('mc_checkmark');
-        } else {
-          setErrorTxt('닉네임은 8자 이하만 사용 가능합니다.');
-          e.target.parentElement.classList.remove('mc_checkmark');
-        }
-        break;
-      // TODO: Email 중복체크
-      case 'email':
-        if (EMAIL_REG.test(value)) {
-          setErrorTxt('');
-          e.target.parentElement.classList.add('mc_checkmark');
-        } else {
-          setErrorTxt('이메일 형식이 아닙니다.');
-          e.target.parentElement.classList.remove('mc_checkmark');
-        }
-        break;
-      case 'password':
-        if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
-          setErrorTxt('');
-          e.target.parentElement.classList.add('mc_checkmark');
-        } else {
-          setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
-          e.target.parentElement.classList.remove('mc_checkmark');
-        }
-        break;
-      case 'passwordConfirm':
-        if (registForm.password === value) {
-          setErrorTxt('');
-          e.target.parentElement.classList.add('mc_checkmark');
-        } else {
-          setErrorTxt('비밀번호가 일치하지 않습니다.');
-          e.target.parentElement.classList.remove('mc_checkmark');
-        }
-        break;
-      default:
-        break;
+  const onChangeName = (e) => {
+
+    const { value } = e.target;
+
+    setName(value.trim());
+
+    if (value.length > 0 && value.length <= 8) {
+      setErrorTxt('');
+      e.target.parentElement.classList.add("mc_checkmark");
+      enabled.checkName = true;
+    } else {
+      setErrorTxt('닉네임은 8자 이하만 사용 가능합니다.')
+      e.target.parentElement.classList.remove("mc_checkmark");
+      enabled.checkName = false;
     }
 
-    setRegistForm({ ...registForm, [name]: value.trim() });
+    checkEnabled({ ...enabled });
+
   };
 
-  const handleOnSubmit = async (e) => {
+  const onChangeEmail = (e) => {
+    const { value } = e.target;
+
+    setEmail(value.trim());
+
+    if (EMAIL_REG.test(value)) {
+      setErrorTxt('');
+      e.target.parentElement.classList.add("mc_checkmark");
+      enabled.checkEmail = true;
+    } else {
+      setErrorTxt('이메일 형식이 아닙니다.');
+      e.target.parentElement.classList.remove("mc_checkmark");
+      enabled.checkEmail = false;
+    };
+
+    checkEnabled({ ...enabled });
+  };
+
+  const onChangePassword = useCallback(e => {
     e.preventDefault();
-    console.log('registForm >> ', registForm);
 
-    await axios
-      .post('/user/signup', {
-        name: registForm.nickName,
-        email: registForm.email,
-        password: registForm.password,
-        passwordConfirm: registForm.passwordConfirm,
+    const { name, value } = e.target;
+
+    name === "password" ? setPassword(value.trim()) : setPwdConfirm(value.trim());
+
+    if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
+      name === "password" ? enabled.checkPassword = true :  enabled.checkPasswordConfirm = true;
+      setErrorTxt('');
+      e.target.parentElement.classList.add("mc_checkmark");
+    } else {
+      setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
+      e.target.parentElement.classList.remove("mc_checkmark");
+      name === "password" ? enabled.checkPassword = false :  enabled.checkPasswordConfirm = false;
+    }
+
+    checkEnabled({ ...enabled });
+
+    if(enabled.checkPassword && enabled.checkPasswordConfirm) {
+      if(name === "password") {
+        if((pwdConfirm === value && pwdConfirm !== "" && value !== "")){
+          enabled.checkPassword = true;
+          setErrorTxt('');
+          e.target.parentElement.classList.add("mc_checkmark");
+          e.target.parentNode.nextElementSibling.classList.add("mc_checkmark");
+        } else {
+          enabled.checkPassword = false;
+          if(pwdConfirm !== "") {
+            setErrorTxt('비밀번호가 일치하지 않습니다.');
+          }
+          e.target.parentElement.classList.remove("mc_checkmark");
+          e.target.parentNode.nextElementSibling.classList.remove("mc_checkmark");
+        }
+      } else {
+        if(password === value) {
+          enabled.checkPasswordConfirm = true;
+          setErrorTxt('');
+          e.target.parentElement.classList.add("mc_checkmark");
+          e.target.parentNode.previousElementSibling.classList.add("mc_checkmark");
+        } else {
+          enabled.checkPasswordConfirm = false;
+          setErrorTxt('비밀번호가 일치하지 않습니다.');
+          e.target.parentElement.classList.remove("mc_checkmark");
+          e.target.parentNode.previousElementSibling.classList.remove("mc_checkmark");
+        }
+      }
+    }
+  },[password,pwdConfirm, enabled]);
+
+  const handleOnSubmit = async e => {
+    e.preventDefault();
+
+    const registForm = {
+      'email' : email,
+      'password' : password,
+      'name' : name,
+      'role_id' : ''
+      // 'role_id' : 'admin'       // 임시
+    };
+
+
+    console.log("registForm >> " , JSON.stringify(registForm));
+    setLoading(true);
+    await axios.post('/user/signup', registForm)
+      .then(res => {
+        setLoading(false);
+        console.log("submit , success res >>>> ", JSON.stringify(res));
+        if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {      // 성공
+          history.push('/login');
+        } else {
+          setErrorTxt(res.data.errorTxt);
+        }
       })
-      .then((res) => {
-        console.log('response', res);
-      })
-      .catch((error) => {
-        console.log(error.response);
+      .catch(error => {
+        setLoading(false);
+        console.log("fail >>>> ", JSON.stringify(error));
+        
+        setErrorTxt(error.message);
       });
-  };
+  }
+
+  // 회원가입 성공/실패 처리
+  useEffect(() => {
+    // effect
+
+    // console.log("password, passwordConfirm" , password, pwdConfirm);
+    return () => {
+      // cleanup
+    }
+  }, [errorTxt])
+
 
   return (
     <div className="login_wrap">
       <Form className="login-form">
-        <Title text="welcome to TMB~!!"></Title>
-        <FormGroup>
-          {/* addclass mc_checkmark */}
-          <Input type="text" name="nickName" placeholder="NickName" onChange={validationCheck} value={registForm.nickName} />
-        </FormGroup>
-        <FormGroup>
-          <Input type="email" name="email" placeholder="Email" onChange={validationCheck} value={registForm.email} />
-        </FormGroup>
-        <FormGroup>
-          <Input type="password" name="password" placeholder="Password" onChange={validationCheck} value={registForm.password} />
-        </FormGroup>
-        <FormGroup className="form-group_02">
-          <Input type="password" name="passwordConfirm" placeholder="PasswordConfirm" onChange={validationCheck} value={registForm.passwordConfirm} />
-        </FormGroup>
-        <p className="chk_validate">{errorTxt}</p>
-        <Button disabled={errorTxt !== ''} className="btn-lg btn-dark btn-block" onClick={handleOnSubmit}>
-          Sign Up
-        </Button>
+      { loading && <LoadingBar/>}
+        <div className="login-form-02">
+          <Title text="welcome to TMB~!!"></Title>
+          <FormGroup>
+            {/* addclass mc_checkmark */}
+            <Input
+              type="text"
+              name="name"
+              placeholder="nickName"
+              value={ name }
+              onChange={ onChangeName }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={ email }
+              onChange={ onChangeEmail }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={ password }
+              onChange={ onChangePassword }
+            />
+          </FormGroup>
+          <FormGroup className="form-group_02">
+            <Input
+              type="password"
+              name="passwordConfirm"
+              placeholder="PasswordConfirm"
+              onChange={ onChangePassword }
+            />
+          </FormGroup>
+          <p className="chk_validate">{ errorTxt }</p>
+          <Button disabled={  !enabled.checkName || !enabled.checkEmail || !enabled.checkPassword || !enabled.checkPasswordConfirm } className="btn-lg btn-dark btn-block" onClick={ handleOnSubmit }>Sign Up</Button>
+        </div>
       </Form>
     </div>
   );
