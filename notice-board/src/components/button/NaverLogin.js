@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-
 import { NAVER_AUTH_URL } from '../common/Constants';
 import NaverImage from '../../assets/images/naver_button.jpg';
 

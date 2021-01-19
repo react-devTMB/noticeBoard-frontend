@@ -1,8 +1,9 @@
+import axios from 'axios';
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, FormGroup, Input } from 'reactstrap';
-import axios from 'axios';
-
+import jwt_decode from "jwt-decode";
+import client from '../../lib/api/client';
 import LoadingBar from '../../components/common/LoadingBar';
 import Title from '../../components/common/Title';
 import LoginButton from '../../components/button/Login';
@@ -11,58 +12,132 @@ import GoogleLoginButton from '../../components/button/GoogleLogin';
 import GithubLoginButton from '../../components/button/GithubLogin';
 import KakaoLoginButton from '../../components/button/KakaoLogin';
 import NaverLoginButton from '../../components/button/NaverLogin';
+import { EMAIL_REG, HTTP_STATUS, PWD_REG } from '../../components/common/Constants';
 
-import { EMAIL_REG, PWD_REG } from '../../components/common/Constants';
 
-const Login = () => {
-  const [loading, setLoading] = useState(false);
-  const [errorTxt, setErrorTxt] = useState('');
-  const [isEmailValid, setIsEmailValid] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
+const Login = (history) => {
+
+  const [ loading, setLoading ] = useState(true);          // 로딩바
+  const [ errorTxt, setErrorTxt] = useState('');          // 에러메세지
+  const [ enabled, checkEnabled ] = useState({
+    'checkEmail' : false,
+    'checkPassword' : false,
+  });
+
+  const checkAutoLogin = async () => {
+
+    // re-rendering limit
+    if(loading) {
+      if(window.location.href.split("&")[1] !== undefined) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        if(code !== null && code !== undefined && code !== "") {
+          await axios.post('oauth/naver/callback', {
+            code: code,
+            state : state
+          }).then(function(res) {
+            setLoading(false);
+            // console.log('resData >>>', JSON.stringify(res));
+            if(res.status === HTTP_STATUS.SUCCESS) {
+
+              localStorage.setItem('access_token' , JSON.stringify(res.headers.access_token));
+              localStorage.setItem('refresh_token' , JSON.stringify(res.headers.refresh_token));
+              localStorage.setItem('userInfo' , JSON.stringify(res.data.response));
+
+              history.push('/home');
+
+            } else {
+              setErrorTxt(res.data.errorTxt);
+            }
+          }).catch((error) => {
+            setErrorTxt('Login error');
+            setLoading(false);
+          })
+        } else {
+          setErrorTxt('Code error');
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    }
+  }
+
+  checkAutoLogin();
 
   const onChangeEmail = (e) => {
-    const { value, parentElement } = e.target;
+    const { value } = e.target;
 
     if (EMAIL_REG.test(value)) {
-      parentElement.classList.add('mc_checkmark');
       setErrorTxt('');
-      setIsEmailValid(true);
+      e.target.parentElement.classList.add('mc_checkmark');
+      enabled.checkEmail = true;
     } else {
-      parentElement.classList.remove('mc_checkmark');
       setErrorTxt('이메일 형식이 아닙니다.');
-      setIsEmailValid(false);
-    }
+      e.target.parentElement.classList.remove('mc_checkmark');
+      enabled.checkEmail = false;
+    };
+
+    checkEnabled({ ...enabled });
   };
 
-  const onChangePassword = useCallback((e) => {
+  const onChangePassword = useCallback(e => {
     e.preventDefault();
 
-    const { value, parentElement } = e.target;
+    const { value } = e.target;
 
     if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
-      parentElement.classList.add('mc_checkmark');
+      enabled.checkPassword = true;
       setErrorTxt('');
-      setIsPasswordValid(true);
+      e.target.parentElement.classList.add("mc_checkmark");
     } else {
-      parentElement.classList.remove('mc_checkmark');
       setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
-      setIsPasswordValid(false);
+      e.target.parentElement.classList.remove("mc_checkmark");
+      enabled.checkPassword = false;
     }
-  }, []);
+
+    checkEnabled({ ...enabled });
+
+  },[enabled]);
+
 
   const doLogin = async (e) => {
     e.preventDefault();
 
     setLoading(true);
 
-    const response = await axios.post('/user/login', {
+    await client
+    .post('/user/login', {
       email: e.target.email.value,
       password: e.target.password.value,
-    });
-    const json = await response.json();
-    console.log(JSON.stringify(json, null, 4));
+    },{
+      headers: {
+        'Authorization': localStorage.getItem('access_token'),
+        'Accept' : 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((res) => {
+      setLoading(false);
+      if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {
+        if (res.data.token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;  // header에 accessToken 공통 추가
+          localStorage.setItem('access_token', res.data.token);
+          localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(res.data.token)));
 
-    setLoading(false);
+          history.push('/home');
+        } else {
+          setErrorTxt('token error!!');
+        }
+      } else {
+        setErrorTxt(res.data.errorTxt);
+      }
+    })
+    .catch((error) => {
+      console.log(error.response);
+      setLoading(false);
+    });
   };
 
   return (
@@ -77,7 +152,7 @@ const Login = () => {
           <Input type="password" name="password" placeholder="Password" onChange={onChangePassword} />
         </FormGroup>
         <p className="chk_validate">{errorTxt}</p>
-        <LoginButton disabled={!isEmailValid || !isPasswordValid} />
+        <LoginButton disabled={!enabled.checkEmail || !enabled.checkPassword} />
       </Form>
       <div className="social-wrap">
         <div className="text-center pt-3">-Or continue with your social account-</div>
