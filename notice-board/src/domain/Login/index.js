@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Form, FormGroup, Input } from 'reactstrap';
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode';
 import client from '../../lib/api/client';
 import LoadingBar from '../../components/common/LoadingBar';
 import Title from '../../components/common/Title';
@@ -14,46 +14,45 @@ import KakaoLoginButton from '../../components/button/KakaoLogin';
 import NaverLoginButton from '../../components/button/NaverLogin';
 import { EMAIL_REG, HTTP_STATUS, PWD_REG } from '../../components/common/Constants';
 
-
-const Login = (history) => {
-
-  const [ loading, setLoading ] = useState(true);          // 로딩바
-  const [ errorTxt, setErrorTxt] = useState('');          // 에러메세지
-  const [ enabled, checkEnabled ] = useState({
-    'checkEmail' : false,
-    'checkPassword' : false,
+const Login = ({ history }) => {
+  const [loading, setLoading] = useState(true); // 로딩바
+  const [errorTxt, setErrorTxt] = useState(''); // 에러메세지
+  const [enabled, checkEnabled] = useState({
+    checkEmail: false,
+    checkPassword: false,
   });
 
   const checkAutoLogin = async () => {
-
     // re-rendering limit
-    if(loading) {
-      if(window.location.href.split("&")[1] !== undefined) {
+    if (loading) {
+      if (window.location.href.split('&')[1] !== undefined) {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const state = urlParams.get('state');
-        if(code !== null && code !== undefined && code !== "") {
-          await axios.post('oauth/naver/callback', {
-            code: code,
-            state : state
-          }).then(function(res) {
-            setLoading(false);
-            // console.log('resData >>>', JSON.stringify(res));
-            if(res.status === HTTP_STATUS.SUCCESS) {
+        if (code !== null && code !== undefined && code !== '') {
+          await axios
+            .post('oauth/naver/callback', {
+              code: code,
+              state: state,
+            })
+            .then(function (res) {
+              setLoading(false);
 
-              localStorage.setItem('access_token' , JSON.stringify(res.headers.access_token));
-              localStorage.setItem('refresh_token' , JSON.stringify(res.headers.refresh_token));
-              localStorage.setItem('userInfo' , JSON.stringify(res.data.response));
+              // console.log('resData >>>', JSON.stringify(res));
+              if (res.status === HTTP_STATUS.SUCCESS) {
+                localStorage.setItem('access_token', JSON.stringify(res.headers.access_token));
+                localStorage.setItem('refresh_token', JSON.stringify(res.headers.refresh_token));
+                localStorage.setItem('userInfo', JSON.stringify(res.data.response));
 
-              history.push('/home');
-
-            } else {
-              setErrorTxt(res.data.errorTxt);
-            }
-          }).catch((error) => {
-            setErrorTxt('Login error');
-            setLoading(false);
-          })
+                history.push('/home');
+              } else {
+                setErrorTxt(res.data.errorTxt);
+              }
+            })
+            .catch((error) => {
+              setErrorTxt('Login error');
+              setLoading(false);
+            });
         } else {
           setErrorTxt('Code error');
           setLoading(false);
@@ -62,7 +61,7 @@ const Login = (history) => {
         setLoading(false);
       }
     }
-  }
+  };
 
   checkAutoLogin();
 
@@ -77,30 +76,31 @@ const Login = (history) => {
       setErrorTxt('이메일 형식이 아닙니다.');
       e.target.parentElement.classList.remove('mc_checkmark');
       enabled.checkEmail = false;
-    };
+    }
 
     checkEnabled({ ...enabled });
   };
 
-  const onChangePassword = useCallback(e => {
-    e.preventDefault();
+  const onChangePassword = useCallback(
+    (e) => {
+      e.preventDefault();
 
-    const { value } = e.target;
+      const { value } = e.target;
 
-    if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
-      enabled.checkPassword = true;
-      setErrorTxt('');
-      e.target.parentElement.classList.add("mc_checkmark");
-    } else {
-      setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
-      e.target.parentElement.classList.remove("mc_checkmark");
-      enabled.checkPassword = false;
-    }
+      if (value.length >= 8 && value.length <= 16 && PWD_REG.test(value)) {
+        enabled.checkPassword = true;
+        setErrorTxt('');
+        e.target.parentElement.classList.add('mc_checkmark');
+      } else {
+        setErrorTxt('비밀번호는 8자이상 16자 이하, 영문, 숫자, 특수문자 조합이어야 합니다.');
+        e.target.parentElement.classList.remove('mc_checkmark');
+        enabled.checkPassword = false;
+      }
 
-    checkEnabled({ ...enabled });
-
-  },[enabled]);
-
+      checkEnabled({ ...enabled });
+    },
+    [enabled]
+  );
 
   const doLogin = async (e) => {
     e.preventDefault();
@@ -108,36 +108,41 @@ const Login = (history) => {
     setLoading(true);
 
     await client
-    .post('/user/login', {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    },{
-      headers: {
-        'Authorization': localStorage.getItem('access_token'),
-        'Accept' : 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-    .then((res) => {
-      setLoading(false);
-      if(res.data.success && res.status === HTTP_STATUS.SUCCESS) {
-        if (res.data.token) {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;  // header에 accessToken 공통 추가
-          localStorage.setItem('access_token', res.data.token);
-          localStorage.setItem('userInfo' , JSON.stringify(jwt_decode(res.data.token)));
-
-          history.push('/home');
-        } else {
-          setErrorTxt('token error!!');
+      .post(
+        '/user/login',
+        {
+          email: e.target.email.value,
+          password: e.target.password.value,
+        },
+        {
+          headers: {
+            'Authorization': localStorage.getItem('access_token'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
         }
-      } else {
-        setErrorTxt(res.data.errorTxt);
-      }
-    })
-    .catch((error) => {
-      console.log(error.response);
-      setLoading(false);
-    });
+      )
+      .then((res) => {
+        setLoading(false);
+
+        if (res.status === HTTP_STATUS.SUCCESS) {
+          if (res.data.token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`; // header에 accessToken 공통 추가
+            localStorage.setItem('access_token', res.data.token);
+            localStorage.setItem('userInfo', JSON.stringify(jwt_decode(res.data.token)));
+
+            history.push('/home');
+          } else {
+            setErrorTxt('token error!!');
+          }
+        } else {
+          setErrorTxt(res.data.errorTxt);
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        setLoading(false);
+      });
   };
 
   return (
