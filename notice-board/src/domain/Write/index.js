@@ -6,6 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import Title from '../../components/common/Title';
 import { FormGroup } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import { Button } from 'reactstrap';
 import { stateToHTML } from 'draft-js-export-html';
 import Axios from 'axios';
@@ -28,6 +31,8 @@ const Write = () => {
   const [editorState, setEditorState] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
 
   const onEditorStateChange = (editorState) => {
     setEditorState(editorState);
@@ -61,18 +66,27 @@ const Write = () => {
             },
           }
         );
-        console.log(response);
-      } catch (e) {
-        console.error(e);
-      }
 
-      console.log(title, content);
+        setOpen(true);
+        setMessage(response.data.message);
+      } catch (e) {
+        setOpen(true);
+        setMessage(e.data.message);
+      }
     },
     [title, content]
   );
 
+  const onClose = (e, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
-    <div>
+    <>
       <Title text="Post"></Title>
       <Container>
         <form className={classes.root} onSubmit={onSubmitForm}>
@@ -95,7 +109,24 @@ const Write = () => {
           </Button>
         </form>
       </Container>
-    </div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={open}
+        autoHideDuration={5000}
+        onClose={onClose}
+        message={message}
+        action={
+          <>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </>
+        }
+      />
+    </>
   );
 };
 

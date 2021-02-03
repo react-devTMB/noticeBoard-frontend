@@ -21,11 +21,11 @@ const App = () => {
           <Container maxWidth="lg">
             <Switch>
               <Route exact path={['/', '/home']} component={Home}></Route>
-              <Route exact path="/login" component={Login}></Route>
-              <Route exact path="/signUp" component={SignUp}></Route>
-              <Route exact path="/post" component={Post}></Route>
-              <Route exact path="/write" component={Write}></Route>
-              <Route path="*" component={NotFound}></Route>
+              <Route path="/login" component={Login}></Route>
+              <Route path="/signUp" component={SignUp}></Route>
+              <Route path="/post" component={Post}></Route>
+              <Route path="/write" component={Write}></Route>
+              <Route component={NotFound}></Route>
             </Switch>
           </Container>
         </UserProvider>
