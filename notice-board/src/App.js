@@ -9,6 +9,7 @@ import SignUp from './domain/SignUp';
 import UserProvider from './components/provider/UserProvider';
 import Post from './domain/Post';
 import Write from './domain/Write';
+import Profile from './domain/Profile';
 import NotFound from './components/error/NotFound';
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
               <Route path="/signUp" component={SignUp}></Route>
               <Route path="/post" component={Post}></Route>
               <Route path="/write" component={Write}></Route>
+              <Route path="/profile" component={Profile}></Route>
               <Route component={NotFound}></Route>
             </Switch>
           </Container>

@@ -44,11 +44,13 @@ const NavForm = () => {
             <strong className="username"> {userName} </strong>
             <span>님</span>
           </div>
-          <div className="nav-link">
-            <span>
-              <PersonOutlineIcon></PersonOutlineIcon>My info
-            </span>
-          </div>
+          <Link to="/profile">
+            <div className="nav-link">
+              <span>
+                <PersonOutlineIcon></PersonOutlineIcon>My info
+              </span>
+            </div>
+          </Link>
           <Link to="/write">
             <div className="nav-link">
               <span>
